@@ -1,0 +1,9 @@
+#include "高DPI対応.hsp"
+#include "任意の場所のスクリーンショット.hsp"
+
+ScreenCapture 2, ginfo_dispx, ginfo_dispy, 0, 0
+
+; ビットマップファイルとして保存
+screen 0, ginfo_dispx / 2, ginfo_dispy / 2
+celput 2, , 0.5, 0.5
+gsel 2 : bmpsave "test.bmp"

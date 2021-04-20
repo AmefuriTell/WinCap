@@ -1,0 +1,9 @@
+#uselib "user32.dll"
+#func SetProcessDPIAware "SetProcessDPIAware"
+#func SetProcessDpiAwareness "SetProcessDpiAwareness" int
+
+if varptr(SetProcessDpiAwareness) {
+	SetProcessDpiAwareness 2
+} else : if varptr(SetProcessDPIAware) {
+	SetProcessDPIAware
+}

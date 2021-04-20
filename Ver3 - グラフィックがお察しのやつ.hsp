@@ -1,0 +1,19 @@
+#include "高DPI対応.hsp"
+#include "任意の場所のスクリーンショット.hsp"
+
+//メイン
+screen 0,,32 * 4
+objsize ginfo_winx, 32
+button "全画面キャプチャ", *ScreenCap
+button "ディスプレイごとキャプチャ", *DisplayCap
+button "選択範囲キャプチャ", *RangeCap
+button "ウィンドウごとキャプチャ", *WindowCap
+
+stop
+*ScreenCap
+    gsel 0, -1
+        
+    gsel 0, 1
+*DisplayCap
+*RangeCap
+*WindowCap

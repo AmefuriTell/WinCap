@@ -1,0 +1,36 @@
+#module _screen_shot_
+    #uselib "gdi32.dll"
+    #cfunc CreateDC "CreateDCA" sptr,sptr,sptr,int
+    #func DeleteDC "DeleteDC"  int
+    #func BitBlt "BitBlt" int,int,int,int,int,int,int,int,int
+
+    #define SRCCOPY     0x00CC0020
+    #define CAPTUREBLT  0x40000000
+
+    #uselib "user32.dll"
+    #func GetDC "GetDC" sptr
+    #func ReleaseDC "ReleaseDC" sptr,sptr
+
+    #deffunc ScreenCapture int buffer_num, int x1, int y1, int x2, int y2
+        ; ?f?X?N?g?b?v????T?C?Y??o?b?t?@??????
+        sx = x1 : sy = y1 : ex = x2 : ey = y2
+        if(sx > ex):tmp = sx:sx = ex:ex = tmp
+        if(sy > ey):tmp = sy:sy = ey:ey = tmp
+        
+        sizex = ex - sx : sizey = ey - sy
+        buffer buffer_num, sizex, sizey
+            redraw 0
+                
+                ; ?f?X?N?g?b?v????f?o?C?X?R???e?L?X?g?��
+                hdcScreen = CreateDC("DISPLAY", NULL, NULL, NULL)
+
+                color 255, 255, 255 : boxf
+                ; ?f?X?N?g?b?v????????R?s?[
+                BitBlt hdc, 0, 0, sizex, sizey, hdcScreen, sx, sy, SRCCOPY | CAPTUREBLT
+
+                ; ?f?o?C?X?R???e?L?X?g??
+                DeleteDC hdcScreen
+            redraw 1
+        gsel 0
+    return
+#global

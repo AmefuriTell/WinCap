@@ -1,0 +1,26 @@
+#uselib "user32.dll"
+	#cfunc WindowFromPoint "WindowFromPoint" int,int
+	#cfunc GetAncestor "GetAncestor" int,int
+	#cfunc GetShellWindow "GetShellWindow"
+		#define GA_ROOT	2
+	#cfunc OpenInputDesktop "OpenInputDesktop" int,int,int
+	#func GetClassName "GetClassNameA" int,int,int
+	#func GetWindowText "GetWindowTextA" int, int, int
+	sdim pName, 256
+	
+	repeat
+		redraw 0
+			color : boxf
+			color 255,255,255
+			pos 0,0
+			mes "マウス下のウィンドウハンドル " + GetAncestor(WindowFromPoint(ginfo_mx,ginfo_my),2)
+			mes "マウス下のウィンドウハンドル (生) " + WindowFromPoint(ginfo_mx,ginfo_my)
+			GetclassName GetAncestor(WindowFromPoint(ginfo_mx,ginfo_my),2), varptr(pName), 256
+			mes "マウス下のクラスの名前を表示 " + pName
+			GetWindowText GetAncestor(WindowFromPoint(ginfo_mx,ginfo_my),2), varptr(pName), 256
+			mes "マウス下の名前を表示 " + pName
+		redraw 1
+		await 100
+	loop
+	
+stop

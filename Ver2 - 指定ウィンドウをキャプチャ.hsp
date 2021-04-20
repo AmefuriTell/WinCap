@@ -1,0 +1,41 @@
+#include "高DPI対応.hsp"
+#include "任意の場所のスクリーンショット.hsp"
+
+#module _window_capture_
+    #uselib "user32.dll"
+    #cfunc GetAncestor "GetAncestor" sptr,sptr
+    #cfunc GetDesktopWindow "GetDesktopWindow"
+    #cfunc GetShellWindow "GetShellWindow"
+    #func GetWindowText "GetWindowTextA" int, int, int
+    #func WindowFromPoint "WindowFromPoint" sptr,sptr
+
+    #uselib "Dwmapi.dll"
+    #cfunc DwmGetWindowAttribute "DwmGetWindowAttribute" int, int, var, int
+
+    #deffunc WindowCapture int buffer_num
+        ; ウィンドウのサイズ取得
+        dim rect, 4     ; RECT構造体
+        win_hwnd = GetAncestor(WindowFromPoint(ginfo_mx,ginfo_my),2)
+        sdim pName, 256
+        GetWindowText win_hwnd, varptr(pName), 256
+        title pName
+        if(win_hwnd == hwnd) : return
+        if DwmGetWindowAttribute(win_hwnd, 9, rect, 16) != 0 {
+            return 1      ; エラー発生時 stat = 1
+        }
+
+        ScreenCapture buffer_num, rect(0), rect(1), rect(2), rect(3)
+    return
+#global
+
+    bgscr 0, ginfo_dispx, ginfo_dispy, 0, 0, 0
+    buffer 1
+	repeat
+        WindowCapture 1
+		redraw 0
+			color 255,255,255 : boxf
+			pos 0,0 : celput 1,,0.5,0.5
+		redraw 1
+		await 
+	loop
+stop
