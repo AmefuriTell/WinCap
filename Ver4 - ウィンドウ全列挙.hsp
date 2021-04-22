@@ -1,0 +1,60 @@
+#module _Listing_Windows_
+    #uselib "user32.dll"
+        #cfunc GetDesktopWindow "GetDesktopWindow"
+        #cfunc GetTopWindow "GetTopWindow" int
+        #cfunc GetWindow "GetWindow" int, int
+            #define GW_HWNDNEXT 2
+        #cfunc IsWindowVisible "IsWindowVisible" int
+        #func GetWindowText "GetWindowTextA" int, int, int
+
+    #define NULL	0
+
+    #define MAX_DETECT	256	//検出する最大個数
+
+    #defcfunc ListingWindow array hwndList, array wTitleList
+        num_detected = 0	//検出カウンタ
+        sdim buf,256	//汎用変数
+        hwnd_desktop = GetDesktopWindow()	//デスクトップのハンドル。(Windowsではデスクトップが他のトップレベルウィンドウの親になっているらしい。)
+        hwnd_ = GetTopWindow(hwnd_desktop)	//デスクトップ傘下のトップレベルウィンドウで、Zオーダーが最大(ざっくり言えば「一番上に浮かんでいる」)のもの。
+        if hwnd_ {	//そいつが空でない(→居る)なら
+            GetWindowText hwnd_,varptr(buf),256	//タイトルバー文字列
+            if strlen(buf) {	//名無しでないなら登録する
+                hwndList(num_detected) = hwnd_
+                wTitleList(num_detected) = buf
+                num_detected ++
+            }
+            repeat	//最下のウィンドウまで繰り返す
+                hwnd_ = GetWindow(hwnd_,GW_HWNDNEXT)
+                if hwnd_ {
+                    if IsWindowVisible(hwnd_) {
+                        GetWindowText hwnd_,varptr(buf),256
+                        if strlen(buf) {
+                            hwndList(num_detected) = hwnd_
+                            wTitleList(num_detected) = buf
+                            num_detected ++
+                        }
+                    }
+                } else : break
+                if num_detected == MAX_DETECT : break	//お腹一杯
+            loop
+        }
+    return num_detected
+#global
+
+repeat
+    dim hwndList, MAX_DETECT	//検出したウィンドウハンドルのリスト
+    sdim wTitleList, 256, MAX_DETECT	//検出したウィンドウのタイトルのリスト
+
+    num_detected = ListingWindow(hwndList, wTitleList)
+
+    redraw 0
+        color 255, 255, 255 : boxf
+        color 0, 0, 0 : pos 0, 0
+        mes ""+num_detected+"個のウィンドウを検出しました。\n"
+
+        repeat num_detected
+            mes wTitleList(cnt)
+        loop
+    redraw 1
+    await
+loop

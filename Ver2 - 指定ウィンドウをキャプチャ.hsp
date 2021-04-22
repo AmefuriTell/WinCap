@@ -28,7 +28,7 @@
     return
 #global
 
-    bgscr 0, ginfo_dispx, ginfo_dispy, 0, 0, 0
+    screen 0, ginfo_dispx, ginfo_dispy, 0, -ginfo_dispx - 3, 0
     buffer 1
 	repeat
         WindowCapture 1
